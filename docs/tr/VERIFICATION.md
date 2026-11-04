@@ -9,7 +9,7 @@ Bu depoda yayınlanan her sayısal/yapısal iddia ve onu destekleyen kanıt.
 | VERIFIED | yakalanan veri veya çalışma anı ölçümüyle doğrulandı |
 | DERIVED | doğrulanmış parçalardan aritmetikle türetildi (aritmetik gösterilir) |
 | AMBIGUOUS | iki ölçüm çelişiyor; temkinli olan yayınlandı, çelişki belirtildi |
-| | bu revizyonda düzeltildi |
+| CORRECTED | bu revizyonda düzeltildi |
 
 **Kanıt kaynakları:** `CAP` (12 yakalanmış gateway alışverişi) · `MEM` (2,89 GB süreç dökümü) ·
 `RAM` (33 GiB fiziksel görüntü) · `IPC` (62 IPC mesajı) · `RUN` (çalışma anı testi) ·
