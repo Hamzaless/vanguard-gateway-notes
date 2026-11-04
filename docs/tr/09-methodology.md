@@ -24,13 +24,13 @@ bir ölçüm iddiayı çürütürse iddia geri çekilir. Geri çekilmiş iki ör
 
 ```
 1. gerçek istisna dizini (.pdata eşdeğeri) — tam eşleşme
-2. çalışma anı yürütme izi — çağrı gerçekten oraya gidiyor mu
+2. çalışma anı yürütme izi — çağrı oraya gidiyor mu
 3. RTTI zinciri (TD → COL → vtable → canlı vptr)
 4. çapraz referans (RIP-göreli) — tek başına zayıf
 5. byte imzası — yalnızca arama için, doğrulama için asla
 ```
 
-### 10.2 Ofset aritmetiği (en pahalı hata)
+### 10.2 Ofset aritmetiği (en maliyetli hata)
 
 Sanal bölümde `RVA == dosya ofseti` **değildir**:
 
