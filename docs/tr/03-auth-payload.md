@@ -38,17 +38,22 @@ Alan sırası byte eşitliği için önemlidir.
 | Parça | Ham boyut | Kodlama | Kaynak (donanımla doğrulandı) |
 |---|---|---|---|
 | p1 | 16 B | 24 karakter | SMBIOS UUID (GUID little-endian) |
-| p2 | 64 B | 88 karakter | **kaynağı belirlenemedi** (oturumlar arası sabit) |
-| p3 | 64 B | 88 karakter | **kaynağı belirlenemedi** (oturumlar arası sabit) |
+| p2 | 64 B | 88 karakter | **çekirdek sürücüsü IOCTL #11** — SHA-512 bloğu (64 B); yalnız çekirdekte, kullanıcı modunda türetilemez |
+| p3 | 64 B | 88 karakter | **çekirdek sürücüsü IOCTL #12** — ikinci SHA-512 bloğu |
 | p4 | 0 B | — | boş ayırıcı |
 | p5 | 6 B | 8 karakter | varsayılan ağ geçidi MAC adresi |
-| p6 | 5 × 97 B | 5 × 132 karakter | disk serisi + model, sıfır dolgulu |
+| p6 | 5 × 97 B | 5 × 132 karakter | disk serisi + model, sıfır dolgulu; istemci bu alanı **WMI `Win32_DiskDrive`** ile kendisi okur (sürücünün `0x22C000` yanıtı aynı 5×97 düzenini yansıtır ama bu alanı beslemez) |
 
 Uzunluk özdeşliği: `4+24 + 4+88 + 4+88 + 3 + 4+8 + 4+664 = 895`.
 
-p2/p3, 42 donanım/OS değerinin 234.234 hash kombinasyonuna karşı denendi (SHA-512, SHA3-512,
-BLAKE2b, HMAC-SHA512, çift SHA-512, farklı ayırıcılar). Eşleşme yok. Dolayısıyla sabitler,
-ancak okunabilir donanım değerlerinden türetilemiyorlar.
+p2/p3 **çekirdek sürücüsünün çıktısıdır** (IOCTL #11 ve #12, her biri 64 baytlık bir SHA-512 bloğu).
+Oturumlar arası sabit olmalarının ama kullanıcı modunda üretilememelerinin nedeni budur: sürücü,
+yalnız çekirdekte bulunan bir sırrı karıştırır. Çapraz kontrol olarak 42 donanım/OS değerinin
+234.234 hash kombinasyonu (SHA-512, SHA3-512, BLAKE2b, HMAC-SHA512, çift SHA-512, farklı ayırıcılar)
+denendi; hiçbiri gözlenen p2/p3 ile eşleşmedi — bu da kullanıcının okuyamadığı bir sırla tutarlıdır.
+
+Aynı IOCTL ailesindeki diğer çıktılar: `#9` önyükleme tohumu (16 B), `ht` içinde kullanılan `#18`
+HMAC-SHA1 ve disk/GPU dizeleri. `f14` alanı sürücüden **gelmez**; tepsi ayar dosyasından okunur (§4.4).
 
 ### 4.3 Bütünlük alanı `ht`
 

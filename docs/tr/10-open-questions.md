@@ -10,8 +10,9 @@
 
 ### 11.1 Açık sorular (bu dokümanda tahmin edilmemiştir)
 
-1. **p2/p3'ün kaynağı.** Oturumlar arası sabit, okunabilir donanımdan türetilemiyor.
-   Aday kaynaklar (çekirdek sürücüsü, TPM) doğrulanmadı.
+1. **p2/p3 içindeki türetim.** Değerler çekirdek sürücüsünün çıktısıdır (IOCTL #11 ve #12,
+   64 baytlık SHA-512 blokları) ve oturumlar arası sabittir. Sürücünün bunlara neyi karıştırdığı —
+   derleme zamanı sırrı, TPM değeri ya da ikisinin birleşimi — **belirlenmedi**.
 2. **`htt` ve `gg` türetimi.** Doğrulama kesin (rastgele değerler reddediliyor), formül bilinmiyor;
    ~1,3 milyon yapısal kombinasyon başarısız oldu.
 3. **Modül yükünün şifresi.** Statik anahtar değil, basit sarma değil, bilinen bir konteyner değil.

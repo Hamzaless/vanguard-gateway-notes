@@ -10,8 +10,9 @@
 
 ### 11.1 Open questions (not guessed in this document)
 
-1. **Origin of p2/p3.** Stable across sessions, not derivable from readable hardware. Candidate
-   sources (kernel driver, TPM) were not confirmed.
+1. **Derivation inside p2/p3.** The values are outputs of the kernel driver (IOCTL #11 and #12,
+   64-byte SHA-512 blocks) and are stable across sessions. What the driver mixes into them — a
+   build-time secret, a TPM value, or a combination — is **not** determined.
 2. **Derivation of `htt` and `gg`.** Validation is confirmed (random values are rejected), the
    formula is not known; ~1.3 M structural combinations failed.
 3. **Module payload cipher.** Not a static key, not a simple wrap, not a known container. The

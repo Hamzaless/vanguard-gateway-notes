@@ -34,7 +34,7 @@
 |---|---|
 | Tel biçimi ve zarf | çözüldü, byte düzeyinde doğrulandı |
 | Kriptografi (OAEP-SHA512 + AES-256-GCM) | çözüldü, gidiş-dönüş doğrulandı |
-| Kimlik doğrulama alanları ve cihaz kimliği | çözüldü (iki 64 baytlık parçanın kaynağı belirlenemedi) |
+| Kimlik doğrulama alanları ve cihaz kimliği | çözüldü (p1/p5/p6 donanımdan; p2/p3 sürücü IOCTL #11/#12 çıktısı) |
 | Sunucu açık anahtarı | canlı bellekten kurtarılabilir (oracle ile doğrulandı) |
 | IPC (pipe) protokolü | çözüldü, 62/62 mesaj |
 | İstemci bağımlılık kapıları | çözüldü (iki formül) |

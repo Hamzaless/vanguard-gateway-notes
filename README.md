@@ -38,7 +38,7 @@
 |---|---|
 | Wire format & envelope | solved, byte-exact |
 | Cryptography (OAEP-SHA512 + AES-256-GCM) | solved, round-trip verified |
-| Auth payload fields & device id | solved (two 64-byte parts: origin not determined) |
+| Auth payload fields & device id | solved (p1/p5/p6 from hardware; p2/p3 are driver IOCTL #11/#12 outputs) |
 | Server public key | recoverable from live memory (oracle-verified) |
 | IPC (pipe) protocol | solved, 62/62 messages |
 | Client dependency gates | solved (two formulas) |

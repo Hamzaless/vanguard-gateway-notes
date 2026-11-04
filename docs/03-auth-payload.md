@@ -38,17 +38,23 @@ write-ups include it. Field ordering is significant for byte equality.
 | Part | Raw size | Encoding | Source (verified against hardware) |
 |---|---|---|---|
 | p1 | 16 B | 24 chars | SMBIOS UUID (GUID little-endian) |
-| p2 | 64 B | 88 chars | **origin not determined** (stable across sessions) |
-| p3 | 64 B | 88 chars | **origin not determined** (stable across sessions) |
+| p2 | 64 B | 88 chars | **kernel driver IOCTL #11** — SHA-512 block (64 B); kernel-only, not derivable in user mode |
+| p3 | 64 B | 88 chars | **kernel driver IOCTL #12** — second SHA-512 block |
 | p4 | 0 B | — | empty separator |
 | p5 | 6 B | 8 chars | default gateway MAC address |
-| p6 | 5 × 97 B | 5 × 132 chars | disk serial + model, zero padded |
+| p6 | 5 × 97 B | 5 × 132 chars | disk serial + model, zero padded; read by the client itself via WMI `Win32_DiskDrive` (the driver's `0x22C000` reply mirrors the same 5×97 layout but does not feed this field) |
 
 Length identity: `4+24 + 4+88 + 4+88 + 3 + 4+8 + 4+664 = 895`.
 
-p2/p3 were tested against 234,234 hash combinations of 42 hardware and OS values (SHA-512,
-SHA3-512, BLAKE2b, HMAC-SHA512, double SHA-512, with several separators). No match. They are
-therefore stable but not derivable from publicly readable hardware values.
+p2/p3 are **outputs of the kernel driver** (IOCTL #11 and #12, each a 64-byte SHA-512 block).
+That is why they are stable across sessions yet cannot be reproduced in user mode: the driver mixes
+a kernel-only secret. As a cross-check, 234,234 hash combinations of 42 hardware/OS values
+(SHA-512, SHA3-512, BLAKE2b, HMAC-SHA512, double SHA-512, several separators) were tried against
+the observed p2/p3 — none matched, which is consistent with a secret the user cannot read.
+
+Related driver outputs (same IOCTL family): `#9` boot seed (16 B), `#18` HMAC-SHA1 used by `ht`,
+and disk/GPU strings. Field `f14` is *not* taken from the driver; it is read from the tray settings
+file (§4.4).
 
 ### 4.3 Integrity field `ht`
 
