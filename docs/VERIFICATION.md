@@ -11,7 +11,7 @@ Every numeric or structural claim published in this repository, with the evidenc
 | VERIFIED | verified against captured data or a runtime measurement |
 | DERIVED | derived by arithmetic from verified parts (the arithmetic is shown) |
 | AMBIGUOUS | two measurements disagree; the conservative one is published and the conflict is stated |
-| | corrected in this revision (the previous wording was wrong) |
+| CORRECTED | corrected in this revision (the previous wording was wrong) |
 
 **Evidence sources**
 
