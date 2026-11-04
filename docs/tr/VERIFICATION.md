@@ -162,7 +162,7 @@ Bu depoda yayınlanan her sayısal/yapısal iddia ve onu destekleyen kanıt.
 
 | # | Önce yayınlanan | Doğrusu | Kanıt |
 |---|---|---|---|
-| 1 | p2/p3 "kaynağı belirlenemedi" | p2 = IOCTL #11, p3 = IOCTL #12 (SHA-512 blokları) | §73.1, §60 |
+| 1 | p2/p3 kaynağı belirsiz yazılmıştı (önceki ifade) | p2 = IOCTL #11, p3 = IOCTL #12 (SHA-512 blokları) | §73.1, §60 |
 | 2 | p6 "sürücüden geliyor" | p6 istemcinin **WMI** sorgusundan; sürücü `0x22C000` yansıtır ama beslemez | §148.5 |
 | 3 | Kota "2/15 dk" tek değer | 2–3/15 dk; güvenli kabul 2 (iki ölçüm listelendi) | §146.2, §307.3 |
 | 4 | "35.4 GB RAM" birimsiz | "33 GiB (35,4 GB ondalık)" | dosya boyutu |

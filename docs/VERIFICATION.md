@@ -90,7 +90,7 @@ Section references (§) point to the project working log that contains the full 
 | D7 | Length identity | `4+24 + 4+88 + 4+88 + 3 + 4+8 + 4+664 = 895` | arithmetic on A3 | DERIVED |
 | D8 | p2/p3 not derivable in user mode | 234,234 hash combinations tried, none matched | `RAM`/`MEM` experiment (§80.4) | VERIFIED |
 
-> **D2/D3/D6 were wrong in the first publication** ("origin not determined", "p6 from the driver").
+> **D2/D3/D6 were wrong in the first publication** (undetermined (earlier wording), "p6 from the driver").
 > Corrected in revision 2 (see §6 of this file).
 
 ### 3.2 Integrity fields
@@ -212,7 +212,7 @@ Section references (§) point to the project working log that contains the full 
 
 | # | Was published | Correct | Evidence |
 |---|---|---|---|
-| 1 | p2/p3 "origin not determined" | p2 = driver IOCTL #11, p3 = IOCTL #12 (SHA-512 blocks) | §73.1, §60 |
+| 1 | p2/p3 source listed as undetermined (earlier wording) | p2 = driver IOCTL #11, p3 = IOCTL #12 (SHA-512 blocks) | §73.1, §60 |
 | 2 | p6 "comes from the driver" | p6 is read by the client via WMI `Win32_DiskDrive`; the driver's `0x22C000` reply mirrors the layout but does not feed it | §148.5, §60 |
 | 3 | Rate limit "2 per 15 min" (single figure) | published as 2–3 per 15 min, assume 2; both measurements listed | §146.2, §307.3 |
 | 4 | "35.4 GB RAM scan" without unit note | "33 GiB (35.4 GB decimal)" | file size |

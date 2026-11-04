@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Run every reference self-test in one go (no network, no credentials)."""
+import os
 import subprocess
 import sys
 
@@ -11,7 +12,8 @@ TESTS = [
 failed = 0
 for name, cmd in TESTS:
     print(f"=== {name} " + "=" * (40 - len(name)))
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True,
+                           cwd=os.path.dirname(os.path.abspath(__file__)))
     print(result.stdout.strip())
     if result.returncode != 0:
         failed += 1
