@@ -24,6 +24,7 @@
 | [`docs/tr/10-open-questions.md`](docs/tr/10-open-questions.md) | Açık maddeler, geri çekilen iddialar, sınırlar |
 | [`docs/tr/11-reproducibility.md`](docs/tr/11-reproducibility.md) | Yeniden üretim notları |
 | [`docs/tr/12-glossary.md`](docs/tr/12-glossary.md) | Terimler |
+| [`docs/tr/VERIFICATION.md`](docs/tr/VERIFICATION.md) | İddia bazlı doğrulama: değer, kanıt kaynağı, durum |
 | [`schemas/vanguard.proto`](schemas/vanguard.proto) | **Doğrulanmış** alan numaraları (düz metinden çıkarıldı) |
 | [`data/measurements.md`](data/measurements.md) | Kota, süreler, sayaçlar, oracle kodları |
 | [`reference/`](reference/) | Çalışır referans kod: istek üretimi + pipe cevapları (İngilizce) |

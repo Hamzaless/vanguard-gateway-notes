@@ -16,6 +16,9 @@
 ```
 consecutive requests, same device identity : 200 · 200 · 429 · 429 · 429 · 429
 ⇒ 2 requests / ~15 minutes
+
+Earlier measurement (different day): 3 requests in ~13 minutes before the first 429.
+Published figure is the conservative one: assume 2 per 15 minutes.
 ```
 
 ### A.3 Timings

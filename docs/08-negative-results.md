@@ -13,8 +13,8 @@ Recording these prevents duplicated effort.
 | # | Hypothesis | Scale tested | Result |
 |---|---|---|---|
 | N1 | Server key is stored in plaintext somewhere | 340+ candidates, 4 padding variants | all 400 |
-| N2 | Session key survives in memory | 35.4 GB RAM + 2.89 GB process dump | not found |
-| N3 | `htt`/`gg` can be derived | ~1.3 M combinations | no match |
+| N2 | Session key survives in memory | 33 GiB RAM (35.4 GB decimal) + 2.89 GB process dump | not found |
+| N3 | `htt`/`gg` can be derived | ≈1.34 M combinations (953,312 + 385,160) | no match |
 | N4 | `htt`/`gg` are not validated | random values with a valid token | rejected (400) |
 | N5 | Module payload uses a static key | ~4.6 B attempts over 4 binaries | no match |
 | N6 | Module payload is a wrapped key | 215 M attempts | no match |
@@ -24,7 +24,7 @@ Recording these prevents duplicated effort.
 | N10 | Dispatch is affine over GF(2) | 960 unit vectors + 32 random pairs | not affine |
 | N11 | Dispatch behaves like `ret` | 17,310 stack samples | 0 matches |
 | N12 | Intra-block constant propagation resolves targets | 32,605 indirect jumps | 0 resolved |
-| N13 | Virtual code is resident in a 33 GB physical dump | full scan | 0 signature hits |
+| N13 | Virtual code is resident in a 33 GiB physical dump | full scan | 0 signature hits |
 | N14 | High-entropy regions are encrypted secrets | 3,744 blocks, 7 ciphers × 12 keys | no match |
 | N15 | Gateway session can be extended | auth + access + heartbeat all 200 | session still closed |
 | N16 | Session can be refreshed from outside | heartbeat / disconnect / connect | 403 `NONSELF_OPERATION`, 404 |

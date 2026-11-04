@@ -25,6 +25,7 @@
 | [`docs/10-open-questions.md`](docs/10-open-questions.md) | Open items, withdrawn claims, limits |
 | [`docs/11-reproducibility.md`](docs/11-reproducibility.md) | Reproduction notes |
 | [`docs/12-glossary.md`](docs/12-glossary.md) | Terminology |
+| [`docs/VERIFICATION.md`](docs/VERIFICATION.md) | Claim-by-claim verification: value, evidence source, status |
 | [`schemas/vanguard.proto`](schemas/vanguard.proto) | **Verified** field numbers recovered from plaintext |
 | [`data/measurements.md`](data/measurements.md) | Rate limits, timings, counters, oracle codes |
 | [`reference/auth_build.py`](reference/auth_build.py) | Request builder + envelope round-trip (self-test) |
