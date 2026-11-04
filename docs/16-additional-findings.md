@@ -196,3 +196,33 @@ for that vtable pointer.
 
 The inventory is machine-specific: addresses shift per build. Only the chain (name → TD → COL →
 vtable → object) is stable.
+
+## 16.13 vgk log container and record codes
+
+The driver's logs are not plain text. They are stored in the platform's `pvpv` container with a
+masked RC4 key; the client ships the decoder. After decoding, records are UTF-16LE lines with a
+timestamp, severity (`[!]` error, `[i]` info, `[-]` trace) and a numeric code.
+
+Codes that matter for detection analysis:
+
+| Code | Contents | Meaning |
+|---|---|---|
+| `B0000041` | `subject ; object ; requested access ; granted access` | one process opened a handle to another |
+| `B000003C` | `pid ; eprocess ; 1 ; 0 ; image name` | process created |
+| `B000003B` | `pid ; eprocess ; 1 ; 0 ; image name ; exit code` | process exited |
+| `B00000DE` | `address ; RiotClientServ…` | notification about the launcher |
+
+Consequence: handle access masks are recorded per process pair. A tool that opens the anti-cheat
+service with full access is visible in this log even when nothing else fails. This is a documented
+trace, not a hypothesis.
+
+## 16.14 `.riot0` section and per-file RVA mapping
+
+`.riot0` (1.6 MB) is not encrypted code. Entropy by sub-region is well below the packed value, and
+it contains the loader structures: exception directory, TLS, exports (`vg`), imports and the IAT.
+Treating it as a payload to decrypt leads nowhere.
+
+Second trap: the RVA → file-offset rule differs per binary and per section. Two images of the same
+product can place the same section at different raw offsets, so a mapping derived from one binary
+silently corrupts reads of the other. Validate `VA ≤ RVA < VA + SizeOfRawData` per file before
+reading (see `09-methodology.md` §10.2).

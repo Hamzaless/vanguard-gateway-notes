@@ -166,3 +166,33 @@ vtable işaretçisi aranarak bulunuyor.
 
 Envanter makineye özgü; adresler build ile kayıyor. Kararlı olan tek şey zincir:
 isim → TD → COL → vtable → nesne.
+
+## 16.12 vgk log konteyneri ve kayıt kodları
+
+Sürücü logları düz metin değil. Platformun `pvpv` konteynerinde, maskeli RC4 anahtarıyla saklanıyor;
+çözücü istemcide bulunuyor. Çözüldükten sonra kayıtlar UTF-16LE satırlar: zaman damgası,
+önem derecesi (`[!]` hata, `[i]` bilgi, `[-]` iz) ve sayısal kod.
+
+Tespit analizi için önemli kodlar:
+
+| Kod | İçerik | Anlam |
+|---|---|---|
+| `B0000041` | `özne ; nesne ; istenen erişim ; verilen erişim` | bir süreç diğerine handle açtı |
+| `B000003C` | `pid ; eprocess ; 1 ; 0 ; imaj adı` | süreç oluştu |
+| `B000003B` | `pid ; eprocess ; 1 ; 0 ; imaj adı ; çıkış kodu` | süreç bitti |
+| `B00000DE` | `adres ; RiotClientServ…` | başlatıcı ile ilgili bildirim |
+
+Sonuç: handle erişim maskeleri süreç çifti bazında kaydediliyor. Anti-cheat servisine tam erişimle
+handle açan bir araç, başka hiçbir şey ters gitmese de bu logda görünüyor. Bu bir hipotez değil,
+kayıtlı bir iz.
+
+## 16.13 `.riot0` bölümü ve dosya başına RVA eşlemesi
+
+`.riot0` (1,6 MB) şifreli kod değil. Alt bölge entropisi paketli değerin belirgin altında ve içinde
+yükleyici yapıları var: istisna dizini, TLS, dışa aktarımlar (`vg`), import tablosu ve IAT. Onu
+çözülecek bir yük sanmak sonuç vermiyor.
+
+İkinci tuzak: RVA → dosya ofseti kuralı ikiliye ve bölüme göre değişiyor. Aynı ürünün iki imajı
+aynı bölümü farklı ham ofsetlere koyabiliyor; birinden türetilen eşleme diğerinde sessizce bozuk
+okuma üretiyor. Okumadan önce her dosyada `VA ≤ RVA < VA + SizeOfRawData` doğrulanmalı
+(bkz. `09-methodology.md` §10.2).
