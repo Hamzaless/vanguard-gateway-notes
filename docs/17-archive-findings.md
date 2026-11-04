@@ -89,3 +89,35 @@ Timestamps are local time; correlation with other logs requires the same clock a
 - Anti-debug is not the obstacle in this binary; emulation stubs for time and CPUID are.
 - Log parsing is mechanical once the container is decoded; the grammar above is enough to write a
   parser.
+
+## 17.6 Envelope protobuf and header coupling
+
+The frame body is itself protobuf, and the field numbers are known:
+
+```
+Envelope {
+  1: uint32  message_type
+  2: bytes   envelope bytes     ("RG\x01\x00" | RSA | nonce | ciphertext | tag)
+  3: uint32  1                  (optional trailer, server accepts its absence)
+}
+```
+
+Size example from a capture: body `2960 B` = `08 03` (2) + `12 89 17` (3) + `2953` + `18 01` (2), and
+`2953 = 4 + 256 + 12 + 2665 + 16`. The same arithmetic with a 2683-byte plaintext gives 2971; both
+were observed, they differ only by plaintext length.
+
+Header coupling, both tested:
+
+| Header | Requirement |
+|---|---|
+| `X-VG-1` | must equal the envelope `message_type`; mismatch returns **400** |
+| `X-VG-2` | **not required** for authentication; omitting it does not change the result |
+| `X-VG-3` | constant `1` |
+
+Padding evidence: the leaked implementation sets `BCRYPT_OAEP_PADDING_INFO.pszAlgId` to
+`BCRYPT_SHA512_ALGORITHM`, which matches the SHA-512 padding that the oracle accepts.
+
+Type numbering correction: "AUTH = 1, ACCESS = 3" is wrong. Verified values are AUTH = 3,
+ACCESS = 4, heartbeat = 7, reply = 5. Two further values appeared in captures: `10` as an empty or
+keepalive message, and `1` in a single bootstrap-like message (288-byte envelope) whose role was
+never confirmed.

@@ -84,3 +84,34 @@ Zaman damgaları yerel saat; başka loglarla korelasyon için aynı saat ve saat
 - `.riot0` şifreli yük içermiyor; %35,8 kapsama bir ölçüm, çaba sınırı değil.
 - Bu ikilide anti-debug engel değil; engel zaman ve CPUID stub'ları.
 - Konteyner çözüldükten sonra log ayrıştırma mekanik; yukarıdaki dilbilgisi parser yazmaya yetiyor.
+
+## 17.6 Zarf protobuf'u ve başlık eşleşmesi
+
+Gövde kendisi protobuf ve alan numaraları biliniyor:
+
+```
+Envelope {
+  1: uint32  message_type
+  2: bytes   zarf baytları     ("RG\x01\x00" | RSA | nonce | şifreli metin | tag)
+  3: uint32  1                 (opsiyonel kuyruk; sunucu yokluğunu da kabul ediyor)
+}
+```
+
+Boyut örneği: gövde `2960 B` = `08 03` (2) + `12 89 17` (3) + `2953` + `18 01` (2) ve
+`2953 = 4 + 256 + 12 + 2665 + 16`. Aynı aritmetik 2683 baytlık düz metinle 2971 veriyor; ikisi de
+gözlendi, fark yalnızca düz metin uzunluğu.
+
+Başlık eşleşmesi, ikisi de test edildi:
+
+| Başlık | Kural |
+|---|---|
+| `X-VG-1` | zarfın `message_type` değerine eşit olmalı; uyuşmazsa **400** |
+| `X-VG-2` | kimlik doğrulama için **gerekli değil**; gönderilmemesi sonucu değiştirmiyor |
+| `X-VG-3` | sabit `1` |
+
+Padding kanıtı: sızdırılmış uygulama `BCRYPT_OAEP_PADDING_INFO.pszAlgId` alanını
+`BCRYPT_SHA512_ALGORITHM` yapıyor; oracle'ın kabul ettiği SHA-512 padding ile uyuşuyor.
+
+Tip numaralandırması düzeltmesi: "AUTH = 1, ACCESS = 3" yanlış. Doğrulanmış değerler AUTH = 3,
+ACCESS = 4, heartbeat = 7, cevap = 5. Kayıtlarda iki değer daha göründü: boş/keepalive olarak `10`
+ve tek bir bootstrap benzeri mesajda `1` (288 baytlık zarf); rolü doğrulanmadı.
