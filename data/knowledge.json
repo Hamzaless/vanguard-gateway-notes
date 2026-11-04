@@ -1,0 +1,560 @@
+{
+  "schema": "vanguard-gateway-notes/kb@1",
+  "generated": "2026-11-05",
+  "scope": "Vanguard 1.19.1.x / VALORANT release-13.09. Defensive research: protocol documentation only.",
+  "warning": "Sending an authentication request to the live gateway is a detection signal. Accounts were banned 0.5-2.7 s after sending one (8/8, small sample). Using this knowledge violates the Riot Games ToS.",
+  "protocol": {
+    "endpoints": [
+      "POST https://<region>.vg.ac.pvp.net:8443/vanguard/v1/gateway",
+      "POST https://<region>2.vg.ac.pvp.net:443/vanguard/v1/gateway",
+      "GET  https://config.vg.ac.pvp.net/config/production.rito"
+    ],
+    "headers": {
+      "Content-Type": "application/x-protobuf",
+      "X-VG-1": "action (3 auth, 4 access, 7 hb, 9 task)",
+      "X-VG-2": "player id",
+      "X-VG-3": "1",
+      "X-VG-4": "product id (some actions)"
+    },
+    "frame": "08 <type> 12 <varint len> <envelope> 18 01",
+    "envelope": {
+      "magic": "52470100 (RG\\x01\\x00)",
+      "rsa_block_bytes": 256,
+      "nonce_bytes": 12,
+      "tag_bytes": 16,
+      "cipher": "AES-256-GCM",
+      "aad": null
+    },
+    "types": {
+      "3": "AuthenticationRequest",
+      "4": "AccessRequest",
+      "5": "TokenResponse",
+      "7": "Heartbeat",
+      "8": "HeartbeatResponse",
+      "9": "TaskResult",
+      "11": "ack"
+    },
+    "size_identity": "4 + 256 + 12 + 2683 + 16 = 2971 (envelope for a 2683-byte plaintext)"
+  },
+  "crypto": {
+    "key_wrap": {
+      "scheme": "RSA-OAEP",
+      "hash": "SHA-512",
+      "mgf": "MGF1-SHA512",
+      "label": "",
+      "db_len": 191
+    },
+    "gcm": {
+      "rule": "keystream starts at J0+1; first block = AES_K(nonce || 0x00000002)",
+      "nonce_bits": 96,
+      "tag_bits": 128
+    },
+    "client_key": {
+      "bits": 2048,
+      "e": 17,
+      "persistent": true,
+      "spki_der_bytes": 292
+    },
+    "server_key": {
+      "bits": 2048,
+      "e": 65537,
+      "pem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy+B9AIkNxf9FrTx5Eb+8\nolKbHm43D8WT08S5iFfQZckNDXKvUfZAW6Z55HiHbquiZCVQDS4yIM/kxiMPX/Wq\nLjZIz0xbZyWLBQdorM1sUtwxi1xmVzcW9isAR2+0QvM1UF2KsCm/vkeKL9z5O1G9\nvI6ZI+rm0bUGOeq0q4rk/ZHoN/LDQnVh/ECR3HFY3+KgL/AwWVLZKs9gMlJJvL/B\n7RL1++fQCSewrJnbRFlGrh77dps8b3wZ2cT5TJV6zVfwtQUqJCKU5KbDz4fdGDPm\n3A4LqbXzT7MM6L/psmd6q0VGlJ9fow/MjaWLhLISCwuwZlrRNY40uczbheZu8u/L\nSQIDAQAB\n-----END PUBLIC KEY-----",
+      "spki_der_bytes": 294,
+      "note": "verified by oracle: envelope accepted returns 401"
+    },
+    "session_key": {
+      "bits": 256,
+      "lifetime": "zeroized within ~50 s of sending"
+    }
+  },
+  "auth_payload": {
+    "plaintext_bytes": 2683,
+    "fields": [
+      {
+        "id": 1,
+        "name": "machine_id",
+        "bytes": 895
+      },
+      {
+        "id": 2,
+        "name": "os_info",
+        "content": {
+          "platform": 1,
+          "arch": 2,
+          "version": "e.g. 10.0.19045"
+        }
+      },
+      {
+        "id": 4,
+        "name": "game_token",
+        "chars": 1106,
+        "desc": "RSO JWT, cid=valorant-client"
+      },
+      {
+        "id": 5,
+        "name": "client_rsa_public_key",
+        "chars": 392,
+        "desc": "SPKI base64, e=17"
+      },
+      {
+        "id": 6,
+        "name": "client_version_a",
+        "value": [
+          1,
+          19,
+          1,
+          18
+        ]
+      },
+      {
+        "id": 7,
+        "name": "client_version_b",
+        "value": [
+          1,
+          19,
+          1,
+          18
+        ]
+      },
+      {
+        "id": 8,
+        "name": "product_id",
+        "value": "com.riotgames.valorant"
+      },
+      {
+        "id": 9,
+        "name": "boot_state",
+        "value": 3
+      },
+      {
+        "id": 13,
+        "name": "external_sid",
+        "bytes": 36,
+        "desc": "UUID, different from player id"
+      },
+      {
+        "id": 14,
+        "name": "flags",
+        "count": 5,
+        "keys": [
+          "VBS",
+          "SB",
+          "TPM2",
+          "HVCI",
+          "IOMMU"
+        ],
+        "source": "vgtray-settings.json (tray component measurement)"
+      },
+      {
+        "id": 15,
+        "name": "integrity",
+        "count": 3,
+        "keys": [
+          "htt",
+          "ht",
+          "gg"
+        ]
+      }
+    ],
+    "absent_fields": [
+      10
+    ],
+    "device_id": {
+      "format": "‖1;<b64>‖2;<b64>‖3;<b64>‖4‖5;<b64>‖6;<b64>;...",
+      "parts": [
+        {
+          "id": "p1",
+          "bytes": 16,
+          "source": "SMBIOS UUID (GUID little-endian)"
+        },
+        {
+          "id": "p2",
+          "bytes": 64,
+          "source": "kernel driver IOCTL #11 (SHA-512 block)",
+          "user_mode_derivable": false
+        },
+        {
+          "id": "p3",
+          "bytes": 64,
+          "source": "kernel driver IOCTL #12 (SHA-512 block)",
+          "user_mode_derivable": false
+        },
+        {
+          "id": "p4",
+          "bytes": 0,
+          "source": "empty separator"
+        },
+        {
+          "id": "p5",
+          "bytes": 6,
+          "source": "default gateway MAC"
+        },
+        {
+          "id": "p6",
+          "bytes": 485,
+          "source": "disk serial + model, read by the client via WMI Win32_DiskDrive",
+          "note": "driver IOCTL 0x22C000 mirrors the 5x97 layout but does not feed this field"
+        }
+      ],
+      "length_identity": "4+24 + 4+88 + 4+88 + 3 + 4+8 + 4+664 = 895"
+    },
+    "integrity_ht": {
+      "formula": "Base64(SHA1('6;'+p6+'1;'+p1+'2;'+p2+'3;'+p3+'5;'+p5+version+MAGIC))",
+      "magic_hex": "F4AD529CDE170EE1D1029B4A3CA89820",
+      "magic_note": "must be 16 raw bytes, not the 32-char hex string",
+      "output": "20 bytes -> 28 base64 chars"
+    },
+    "integrity_htt_gg": {
+      "validated": true,
+      "derivation": "unknown",
+      "evidence": "random value with a valid token is rejected (400)"
+    }
+  },
+  "key_recovery": {
+    "method": [
+      "enumerate RTTI type descriptors in .rdata (OAEP<SHA1>, OAEP<SHA512>, RSAFunction, GCM_Final)",
+      "resolve TD -> COL (Complete Object Locator)",
+      "find the vtable that points at the COL",
+      "search a live process dump for the vtable value (object vptr)",
+      "read CryptoPP RSAFunction layout and convert (n,e) to PEM",
+      "verify with the oracle"
+    ],
+    "cpp_offsets": {
+      "n_size": "0x28",
+      "n_ptr": "0x30",
+      "e_size": "0x58",
+      "e_ptr": "0x60"
+    },
+    "oracle": {
+      "200": "accepted",
+      "400": "envelope could not be opened",
+      "401": "opened, token rejected",
+      "403": "opened, account restricted",
+      "429": "rate limited"
+    }
+  },
+  "ipc": {
+    "header": {
+      "bytes": 26,
+      "layout": "[u32 type][u32 total][u16 field_count][16 x 0x00]"
+    },
+    "field": "[u16 tag][u32 length][data]",
+    "total": "26 + sum(6 + length)",
+    "types": {
+      "0x02": "disconnect (no reply)",
+      "0x03": "heartbeat request",
+      "0x04": "heartbeat reply",
+      "0x64": "authentication request",
+      "0x65": "authentication reply",
+      "0x67": "match start (no reply)",
+      "0x69": "health check",
+      "0x3EB": "health reply",
+      "0x09": "session auth",
+      "0x66": "not present",
+      "0x68": "not present"
+    },
+    "replies": {
+      "0x65": {
+        "bytes": 1250,
+        "fields": [
+          {
+            "tag": 0,
+            "len": 36,
+            "desc": "player id"
+          },
+          {
+            "tag": 1,
+            "len": 1106,
+            "desc": "access token"
+          },
+          {
+            "tag": 2,
+            "len": 22,
+            "desc": "product id"
+          },
+          {
+            "tag": 3,
+            "len": 36,
+            "desc": "session id"
+          }
+        ],
+        "size_identity": "26 + 4*6 + 36 + 1106 + 22 + 36 = 1250"
+      },
+      "0x09": {
+        "bytes": 40,
+        "when": "immediately after 0x65"
+      },
+      "0x04": {
+        "bytes": 40,
+        "behaviour": "echo the 8-byte counter from the request (58/58)"
+      },
+      "0x3EB": {
+        "bytes": 36,
+        "field": {
+          "tag": 0,
+          "len": 4,
+          "desc": "reasons bitmask; 0 = success"
+        }
+      }
+    },
+    "carve_result": "memory scan of two process dumps found only 0x02/0x03/0x04 frames (26 bytes, 0 fields)"
+  },
+  "client_gates": {
+    "restart_required": [
+      {
+        "flag": "off",
+        "formula": "(vgk.StartType == SYSTEM_START) && (vgk.State != RUNNING)"
+      },
+      {
+        "flag": "on",
+        "formula": "(VgrlQueryInstallStatus() == 2)"
+      }
+    ],
+    "note": "value is copied from plugin state, not computed at the call site; only inputs can be made consistent",
+    "vgrl_ordinals": {
+      "1342": "install status (0 error, 1 absent, 2 installed)",
+      "1343": "error text",
+      "1344": "start service",
+      "1345": "restart-waived flags",
+      "1346": "reset boot status",
+      "exports": "ordinal-only (NumberOfNames = 0)"
+    },
+    "riot_id_gate": {
+      "http": 467,
+      "code": "riot_id_required",
+      "dev_flag": "--developer-skip-riot-id"
+    },
+    "product_session": {
+      "endpoints": [
+        "/product-session/v1/sessions",
+        "/product-session/v2/heartbeat/{id}",
+        "/product-session/v2/heartbeat-internal/{id}",
+        "/product-session/v1/session-heartbeats/{id}",
+        "/product-session/v1/external-sessions/{id}",
+        "/product-session/v1/host-session/id",
+        "/product-session/v1/data/path/<patchline>"
+      ],
+      "heartbeat_s": 60,
+      "ceiling_s": 300
+    },
+    "launch_arguments": [
+      "-remoting-app-port",
+      "-remoting-auth-token",
+      "-patchline",
+      "-subject",
+      "-ares-deployment",
+      "-config-endpoint",
+      "-savetouserdir",
+      "-culture",
+      "-riotgamesapi-settings-token"
+    ],
+    "settings_token": {
+      "content": [
+        "rso_auth.authorization-key (OAuth code + PKCE verifier)",
+        "riotclient.app-port / auth-token",
+        "product-integration.heartbeat|lockfile|settings"
+      ],
+      "token_exchange": "grant_type=authorization_code&code=..&code_verifier=..&client_id=valorant-client",
+      "code_single_use": true
+    }
+  },
+  "session": {
+    "object_fields": 23,
+    "unreliable_field": "expiredTime (unset or stale while connected; do not use as TTL)",
+    "measured_lifetime_s": 646,
+    "ttl_s_approx": 192,
+    "heartbeat_s": 90,
+    "restriction_state_location": "not in the session object (separate launch-restriction layer)"
+  },
+  "rms": {
+    "url": "wss://<region>.edge.rms.si.riotgames.com/rms/v1/session?token=<token>",
+    "envelope": {
+      "payload.resource": "...",
+      "payload.payload": "escaped JSON string",
+      "type": "push"
+    },
+    "carries": [
+      "ares-session/v1/sessions/*",
+      "ares-parties/*",
+      "ares-core-game/*"
+    ],
+    "observed_close": "server pushes cxnState=CLOSED ~24 s after leaving gameplay",
+    "pinning": "no pin entry found for the RMS host (static observation, not live-tested)"
+  },
+  "detection": {
+    "ban": {
+      "types": [
+        "TIME_BAN (14 days)",
+        "PERMANENT_BAN"
+      ],
+      "reason": "THIRD_PARTY_TOOLS",
+      "scope": "product"
+    },
+    "measurement": {
+      "accounts_banned_after_auth": "8/8",
+      "delay_s": [
+        0.5,
+        2.7
+      ],
+      "accounts_unaffected_without_auth": "3/3",
+      "caveat": "small samples, single environment; causal indicator, not a rate"
+    },
+    "client_traces": [
+      "service environment variable pointing at a custom directory",
+      "machine-wide SSL_CERT_FILE / SSLKEYLOGFILE style variables",
+      "service binary without a version resource (client reads 0.0.0.0)",
+      "kernel driver absent from the signature catalogue",
+      "device identifier derived from a kernel-only secret"
+    ]
+  },
+  "limits": {
+    "auth_budget": "2-3 requests per ~15 min (conservative: 2)",
+    "session_lifetime_vs_budget": "session ~192-646 s < budget window -> continuous operation impossible client-side",
+    "user_mode_gaps": [
+      "p2/p3 origin secret",
+      "htt/gg derivation",
+      "module payload cipher",
+      "virtual section control flow (register-dependent dispatch)"
+    ]
+  },
+  "negative_results": [
+    {
+      "id": "N1",
+      "hypothesis": "server key in plaintext",
+      "tested": "340+ candidates",
+      "result": "all 400"
+    },
+    {
+      "id": "N2",
+      "hypothesis": "session key survives in memory",
+      "tested": "33 GiB RAM + 2.89 GB process dump",
+      "result": "not found"
+    },
+    {
+      "id": "N3",
+      "hypothesis": "htt/gg derivable",
+      "tested": "~1.34M combinations",
+      "result": "no match"
+    },
+    {
+      "id": "N4",
+      "hypothesis": "htt/gg not validated",
+      "tested": "random + valid token",
+      "result": "rejected (400)"
+    },
+    {
+      "id": "N5",
+      "hypothesis": "module payload static key",
+      "tested": "~4.6B attempts",
+      "result": "no match"
+    },
+    {
+      "id": "N6",
+      "hypothesis": "module payload wrapped key",
+      "tested": "215M attempts",
+      "result": "no match"
+    },
+    {
+      "id": "N7",
+      "hypothesis": "module carve as PE",
+      "tested": "11.3 GB dumps",
+      "result": "315 PE, no module"
+    },
+    {
+      "id": "N8",
+      "hypothesis": "static CFG of virtual section",
+      "tested": "5 methods",
+      "result": "not recoverable"
+    },
+    {
+      "id": "N9",
+      "hypothesis": "synthetic-state execution",
+      "tested": "400 blocks",
+      "result": "fault after 7 accesses"
+    },
+    {
+      "id": "N10",
+      "hypothesis": "dispatch affine over GF(2)",
+      "tested": "960 vectors + 32 pairs",
+      "result": "not affine"
+    },
+    {
+      "id": "N11",
+      "hypothesis": "dispatch acts like ret",
+      "tested": "17,310 samples",
+      "result": "0"
+    },
+    {
+      "id": "N12",
+      "hypothesis": "constant propagation resolves targets",
+      "tested": "32,605 indirect jumps",
+      "result": "0"
+    },
+    {
+      "id": "N13",
+      "hypothesis": "virtual code in physical dump",
+      "tested": "33 GiB scan",
+      "result": "0 hits"
+    },
+    {
+      "id": "N14",
+      "hypothesis": "high-entropy blobs are encrypted secrets",
+      "tested": "3,744 blocks, 7 ciphers x 12 keys",
+      "result": "no match"
+    },
+    {
+      "id": "N15",
+      "hypothesis": "gateway session extension",
+      "tested": "auth+access+hb 200",
+      "result": "session still closed"
+    },
+    {
+      "id": "N16",
+      "hypothesis": "external session refresh",
+      "tested": "heartbeat/disconnect/connect",
+      "result": "403 NONSELF / 404"
+    },
+    {
+      "id": "N17",
+      "hypothesis": "task id is a key seed",
+      "tested": "7/7",
+      "result": "no, it is CRC32"
+    },
+    {
+      "id": "N18",
+      "hypothesis": "hosts-file redirection",
+      "tested": "127.0.0.1",
+      "result": "client ignored"
+    },
+    {
+      "id": "N19",
+      "hypothesis": "system proxy redirection",
+      "tested": "8080",
+      "result": "tunnel not used"
+    },
+    {
+      "id": "N20",
+      "hypothesis": "TLS keylog covers game TLS",
+      "tested": "93 secrets / 779 handshakes",
+      "result": "0"
+    }
+  ],
+  "open_questions": [
+    "what secret is mixed inside driver IOCTL #11/#12 (p2/p3)",
+    "derivation of htt and gg",
+    "cipher and key schedule of the task module container (RICRYPTO)",
+    "control flow of the virtualized section (dispatch depends on live registers)",
+    "mechanism that caps the session at 646 s"
+  ],
+  "artifacts": {
+    "reference_code": [
+      "reference/auth_build.py",
+      "reference/pipe_proto.py",
+      "reference/pipe_server.py"
+    ],
+    "schemas": [
+      "schemas/vanguard.proto"
+    ],
+    "verification": "docs/VERIFICATION.md"
+  }
+}

@@ -24,6 +24,10 @@
 | [`docs/tr/10-open-questions.md`](docs/tr/10-open-questions.md) | Açık maddeler, geri çekilen iddialar, sınırlar |
 | [`docs/tr/11-reproducibility.md`](docs/tr/11-reproducibility.md) | Yeniden üretim notları |
 | [`docs/tr/12-glossary.md`](docs/tr/12-glossary.md) | Terimler |
+| [`docs/tr/VERIFICATION.md`](docs/tr/VERIFICATION.md) | İddia bazlı doğrulama kaydı |
+| [`docs/tr/13-rms.md`](docs/tr/13-rms.md) | RMS oturum taşıyıcısı |
+| [`docs/tr/14-emulator-architecture.md`](docs/tr/14-emulator-architecture.md) | Ne yerine ne geçiyor, sınırlar |
+| [`data/knowledge.json`](data/knowledge.json) | Ajanlar için makine-okunur bilgi tabanı |
 | [`docs/tr/VERIFICATION.md`](docs/tr/VERIFICATION.md) | İddia bazlı doğrulama: değer, kanıt kaynağı, durum |
 | [`schemas/vanguard.proto`](schemas/vanguard.proto) | **Doğrulanmış** alan numaraları (düz metinden çıkarıldı) |
 | [`data/measurements.md`](data/measurements.md) | Kota, süreler, sayaçlar, oracle kodları |

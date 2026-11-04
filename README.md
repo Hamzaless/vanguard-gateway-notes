@@ -25,6 +25,10 @@
 | [`docs/10-open-questions.md`](docs/10-open-questions.md) | Open items, withdrawn claims, limits |
 | [`docs/11-reproducibility.md`](docs/11-reproducibility.md) | Reproduction notes |
 | [`docs/12-glossary.md`](docs/12-glossary.md) | Terminology |
+| [`docs/VERIFICATION.md`](docs/VERIFICATION.md) | Claim-by-claim verification log |
+| [`docs/13-rms.md`](docs/13-rms.md) | RMS session carrier: what it pushes, why sessions close |
+| [`docs/14-emulator-architecture.md`](docs/14-emulator-architecture.md) | What replaces what, and the hard limits |
+| [`data/knowledge.json`](data/knowledge.json) | Machine-readable knowledge base for agents |
 | [`docs/VERIFICATION.md`](docs/VERIFICATION.md) | Claim-by-claim verification: value, evidence source, status |
 | [`schemas/vanguard.proto`](schemas/vanguard.proto) | **Verified** field numbers recovered from plaintext |
 | [`data/measurements.md`](data/measurements.md) | Rate limits, timings, counters, oracle codes |
