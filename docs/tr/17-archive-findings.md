@@ -115,3 +115,33 @@ Padding kanıtı: sızdırılmış uygulama `BCRYPT_OAEP_PADDING_INFO.pszAlgId` 
 Tip numaralandırması düzeltmesi: "AUTH = 1, ACCESS = 3" yanlış. Doğrulanmış değerler AUTH = 3,
 ACCESS = 4, heartbeat = 7, cevap = 5. Kayıtlarda iki değer daha göründü: boş/keepalive olarak `10`
 ve tek bir bootstrap benzeri mesajda `1` (288 baytlık zarf); rolü doğrulanmadı.
+
+## 17.7 İki ayrı heartbeat formatı (düzeltme)
+
+Sızdırılmış kaynaklarda iki ilgisiz heartbeat kurucusu var. Farklı kanallara aitler ve tek şemada
+birleştirilmemeli:
+
+| Kaynak | Kanal | Alanlar |
+|---|---|---|
+| `EncodeHeartbeatRequest` | gateway HTTP | `f1` token, `f2` zaman, `f4 = 1`, `f5` ×2, `f6 = 1` — başka alan yok |
+| `…WithTasks` | gateway HTTP | yukarıdakiler + `f7` görevler, `f12` modül ×3, `f16 {f1=1, f2=0}` |
+| `heartbeat_payload` (referans emülatörde) | **sürücü IOCTL yanıtı** (`0x22C034`) | bayt odaklı, protobuf değil: `0x0C`/`0x10` düz yazılıyor, uzunluklar big-endian; `f16 = {eph, secret16, htt}` yalnız burada |
+
+Bu çalışma için sonucu: canlı testlerde kullanılan heartbeat isteği iki sızdırılmış kurucudan da
+farklı bir alan kümesi taşıyordu ve yine de kabul edildi (200). Yani kabul, alan kümesini kanıtlamıyor;
+yalnızca cevap ayrıştırma tam olarak gözleme dayanıyor.
+
+## 17.8 Oyun logu koşu istatistikleri
+
+On bir yakalanmış istemci koşusu tablolandı (yalnız süreler, kimlik yok):
+
+| Metrik | Değer |
+|---|---|
+| koşu süresi | 33 s … 210 s |
+| ana menüye ulaşan | 11'de 1 |
+| oyun içi duruma ulaşan | 11'de 1 |
+| ilk hata | çoğunda `VanguardFail`, bazılarında `SessionRefreshFail` |
+| oturum bağlantısından ilk hataya | 3 s … 190 s |
+
+Okuma: yerel parçalar tutarlıyken istemci menüye ve oyuna ulaşabiliyor, ancak platform oturumu kısa
+süre sonra düşüyor. Bu, §16.9'daki iki hata adının ayrı olduğu gözlemiyle tutarlı.

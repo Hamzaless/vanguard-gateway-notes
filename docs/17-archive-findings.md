@@ -121,3 +121,33 @@ Type numbering correction: "AUTH = 1, ACCESS = 3" is wrong. Verified values are 
 ACCESS = 4, heartbeat = 7, reply = 5. Two further values appeared in captures: `10` as an empty or
 keepalive message, and `1` in a single bootstrap-like message (288-byte envelope) whose role was
 never confirmed.
+
+## 17.7 Two different heartbeat formats (correction)
+
+Leaked sources contain two unrelated heartbeat builders. They belong to different channels and
+must not be merged into one schema:
+
+| Source | Channel | Fields |
+|---|---|---|
+| `EncodeHeartbeatRequest` | gateway HTTP | `f1` token, `f2` timestamp, `f4 = 1`, `f5` ×2, `f6 = 1` — no other fields |
+| `…WithTasks` | gateway HTTP | the above plus `f7` tasks, `f12` module ×3, `f16 {f1=1, f2=0}` |
+| `heartbeat_payload` (in the reference emulator) | **driver IOCTL reply** (`0x22C034`) | byte-oriented, not protobuf: `0x0C`/`0x10` written literally, lengths big-endian; `f16 = {eph, secret16, htt}` exists only here |
+
+Consequence for this work: the heartbeat request used in the live tests carried a different field
+set from both leaked builders and was still accepted (200). Acceptance therefore does not prove the
+field set; only the reply parsing (§ response schema) is fully constrained by observation.
+
+## 17.8 Game-log run statistics
+
+Eleven captured runs of the client were tabulated (timings only, no identifiers):
+
+| Metric | Value |
+|---|---|
+| run duration | 33 s … 210 s |
+| reached main menu | 1 of 11 |
+| reached in-game state | 1 of 11 |
+| first fault | `VanguardFail` (most runs), `SessionRefreshFail` (some) |
+| time from session connect to first fault | 3 s … 190 s |
+
+Read as: the client can reach the menu and enter a game when the local pieces are consistent, but
+the platform session fails shortly after, consistent with §16.9 (the two failure names are distinct).
