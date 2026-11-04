@@ -29,6 +29,7 @@ Hesap kimliği, kimlik bilgisi veya oturum anahtarı içermez.
 | [docs/tr/13-rms.md](docs/tr/13-rms.md) | RMS oturum taşıyıcısı |
 | [docs/tr/14-emulator-architecture.md](docs/tr/14-emulator-architecture.md) | Bileşen ikamesi ve sınırları |
 | [docs/tr/15-memory-capture.md](docs/tr/15-memory-capture.md) | Canlı bellek dökümü ve incelemesi |
+| [docs/tr/16-additional-findings.md](docs/tr/16-additional-findings.md) | `gg`, VAN/VAL kodları, IOCTL dağıtımı, IPC envanteri |
 | [docs/tr/VERIFICATION.md](docs/tr/VERIFICATION.md) | İddia bazlı doğrulama |
 | [schemas/vanguard.proto](schemas/vanguard.proto) | Trafikten çıkarılan alan numaraları |
 | [data/measurements.md](data/measurements.md) | Kota, süreler, sayaçlar |
