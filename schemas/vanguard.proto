@@ -1,0 +1,135 @@
+// Vanguard gateway schema — field numbers RECOVERED FROM REAL TRAFFIC
+//
+// Confidence marks:
+//   [V] verified   — field number and type observed in captured plaintext
+//   [O] observed   — field present, semantic meaning not fully determined
+//   [?] unknown    — not observed; do not assume
+//
+// Recovered by decoding the plaintext of a real authentication request
+// (2683 bytes) and of a real TokenResponse (7900 bytes).
+// Numbers are NOT guesses: they come from protobuf wire tags in captured bytes.
+
+syntax = "proto3";
+package vanguard;
+
+// ---------------------------------------------------------------- requests
+
+// Outer wire frame is NOT protobuf-aware; it is:
+//   08 <type> 12 <varint len(env)> <envelope> 18 01
+// The envelope itself is: "RG\x01\x00" | RSA(32B key) | nonce12 | AES-GCM ct | tag16
+
+// action 3
+message AuthenticationRequest {
+  string machine_id            = 1;   // [V] "||1;<b64>||2;<b64>||3;<b64>||4||5;<b64>||6;<b64>;..."
+  OSInfo os                    = 2;   // [V]
+  // 3 not observed
+  string game_token            = 4;   // [V] RSO access token (JWT, ~1106 chars)
+  string client_rsa_public_key = 5;   // [V] SPKI DER, base64 (e = 17)
+  Version version_a            = 6;   // [V]
+  Version version_b            = 7;   // [V] duplicate of 6
+  string product_id            = 8;   // [V] "com.riotgames.valorant"
+  int32  boot_state            = 9;   // [V] observed value 3
+  // 10 not present on this build (an "ephemeral id" appears in older write-ups)
+  // 11 / 12 not observed in captured traffic
+  string external_sid          = 13;  // [V] UUID, distinct from the account UUID
+  repeated FlagsEntry   flags      = 14;  // [V] 5 entries
+  repeated IntegrityEntry integrity = 15; // [V] 3 entries: "htt", "ht", "gg"
+}
+
+message OSInfo {
+  int32  platform = 1;   // [V] observed 1  (variant 6 in circulation is NOT this build)
+  int32  arch     = 2;   // [V] observed 2
+  string version  = 4;   // [V] e.g. "10.0.19045"
+}
+
+message Version {
+  int32 major = 1;   // [V]
+  int32 minor = 2;   // [V]
+  int32 patch = 3;   // [V]
+  int32 build = 4;   // [V]
+}
+
+message FlagsEntry {
+  string key   = 1;   // [V] IOMMU / TPM2 / VBS / SB / HVCI
+  int32  value = 2;   // [V] 0 or 1
+}
+
+message IntegrityEntry {
+  string key   = 1;   // [V] "htt" | "ht" | "gg"
+  string value = 2;   // [V] base64
+}
+
+// action 4 — ACCESS
+message AccessRequest {
+  string nested_token = 1;   // [V] the "{e}..." value returned in f1 of TokenResponse
+}
+
+// action 7 — HEARTBEAT
+message HeartbeatRequest {
+  string token = 1;               // [V] current access token
+  // 2..13: not observed in captured requests
+  repeated FlagsEntry      flags     = 14;  // [V] same 5 entries as AUTH
+  repeated IntegrityEntry  integrity = 15;  // [V] same 3 entries
+}
+
+// action 9 — TASK_RESULT
+message TaskResultRequest {
+  string     token  = 1;   // [V]
+  TaskResult result = 2;   // [V]
+}
+
+message TaskResult {
+  string          id     = 1;   // [V] 24 hex characters (task id from heartbeat)
+  bytes           data   = 2;   // [V] result payload (JSON in observed cases)
+  TaskPerformance perf   = 3;   // [V]
+}
+
+message TaskPerformance {
+  int64 started_ms  = 1;   // [O] observed small integers (10)
+  int64 duration_ms = 2;   // [O] observed small integers (5)
+}
+
+// ---------------------------------------------------------------- responses
+
+// action 5 (auth) and 4 (access) reply
+message TokenResponse {
+  string token                  = 1;   // [V] 6167 B, begins with "{e}" + envelope
+  string expiration             = 2;   // [V] ISO-8601 string, ~7 days
+  int32  unknown_flag           = 3;   // [O] observed value 1
+  string server_rsa_public_key  = 4;   // [V] base64 SPKI, 2048-bit, e = 65537 (per-session rotation)
+  repeated bytes ephemeral      = 5;   // [V] 3 entries, ~420 B each
+  // 6 / 7 not observed
+  string opaque_hex             = 8;   // [O] 32 hex characters, meaning unknown
+  int64  opaque_number          = 9;   // [O] e.g. 604794
+}
+
+// action 8 — HEARTBEAT reply
+message HeartbeatResponse {
+  int32 flag = 1;                    // [O] observed 0/1
+  repeated Task tasks = 2;           // [V]
+}
+
+message Task {
+  string id   = 1;   // [V] 24 hex characters
+  int32  code = 2;   // [O] observed 1..3
+  TaskData data = 9; // [V] nested container
+}
+
+message TaskData {
+  int32 flag = 1;             // [O] observed 1
+  ModuleTaskData module = 2;  // [V]
+}
+
+message ModuleTaskData {
+  int32  kind        = 2;   // [O] observed 2
+  bytes  module      = 3;   // [V] container payload: 64B header | "RICRYPTO" | ... | body
+  // 4 not observed consistently
+  bytes  token       = 5;   // [V] 24 B, per-task token
+  uint32 crc32       = 6;   // [V] CRC32 of `module` — verified 7/7
+  int32  trailer     = 9;   // [O] observed 3
+}
+
+// action 11 — ack (empty body in observed replies)
+message TaskResultResponse {
+  // no fields observed; Content-Length 0
+}
