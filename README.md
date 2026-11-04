@@ -28,6 +28,7 @@ No account identifiers, credentials or session keys are included.
 | [docs/12-glossary.md](docs/12-glossary.md) | Terminology |
 | [docs/13-rms.md](docs/13-rms.md) | RMS session carrier |
 | [docs/14-emulator-architecture.md](docs/14-emulator-architecture.md) | Component substitution and its limits |
+| [docs/15-memory-capture.md](docs/15-memory-capture.md) | Live memory capture (process, physical, crash, VM) and analysis |
 | [docs/VERIFICATION.md](docs/VERIFICATION.md) | Claim-by-claim verification |
 | [schemas/vanguard.proto](schemas/vanguard.proto) | Field numbers recovered from traffic |
 | [data/measurements.md](data/measurements.md) | Rate limits, timings, counters |
